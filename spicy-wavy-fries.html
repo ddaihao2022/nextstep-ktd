@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>狼牙土豆</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@900&display=swap');
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+  :root {
+    --bg: #faf3ed; --ink: #1a120c; --accent: #e8451e;
+    --accent-deep: #a82d0e; --stripe: #3d1a0d;
+  }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: 'Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif;
+    min-height: 100vh; overflow-x: hidden;
+  }
+  .frame { position:fixed; background:var(--stripe); z-index:100; }
+  .ft { top:0; left:0; right:0; height:6px; }
+  .fb { bottom:0; left:0; right:0; height:6px; }
+  .fl { top:0; left:0; bottom:0; width:6px; }
+  .fr { top:0; right:0; bottom:0; width:6px; }
+  .zigzag {
+    position:fixed; inset:0; pointer-events:none; z-index:0; opacity:0.05;
+    background: repeating-linear-gradient(
+      45deg, transparent, transparent 15px,
+      var(--ink) 15px, var(--ink) 16px
+    );
+  }
+  .container {
+    position:relative; z-index:1; min-height:100vh;
+    display:flex; flex-direction:column; padding:20px 20px 0; max-width:1400px; margin:0 auto;
+  }
+  .top-marks {
+    display:flex; justify-content:space-between; align-items:flex-start;
+    padding:16px 0 10px; border-bottom:4px solid var(--ink); margin-bottom:0;
+  }
+  .top-marks .label {
+    font-size:clamp(10px,1vw,13px); font-weight:900; letter-spacing:0.25em;
+    text-transform:uppercase; color:var(--stripe); font-family:monospace;
+  }
+  .top-marks .zig {
+    width:0; height:0;
+    border-left:14px solid transparent; border-right:14px solid transparent;
+    border-top:20px solid var(--accent);
+    position:relative;
+  }
+  .top-marks .zig::after {
+    content:''; position:absolute; top:-26px; left:-14px;
+    border-left:14px solid transparent; border-right:14px solid transparent;
+    border-top:20px solid var(--accent-deep);
+  }
+  .hero {
+    flex:1; display:flex; flex-direction:column; justify-content:center;
+    padding:clamp(20px,4vh,60px) 0; position:relative;
+  }
+  .lines {
+    position:absolute; inset:0; pointer-events:none; z-index:0; overflow:hidden;
+  }
+  .lines::before {
+    content:''; position:absolute; top:22%; left:-5%; width:110%; height:2px;
+    background:var(--accent); opacity:0.35; transform:rotate(3deg);
+  }
+  .lines::after {
+    content:''; position:absolute; bottom:20%; left:-5%; width:110%; height:2px;
+    background:var(--accent); opacity:0.35; transform:rotate(-2deg);
+  }
+  .hero-inner { position:relative; z-index:1; }
+  .super {
+    font-family:monospace; font-size:clamp(12px,1.5vw,18px); font-weight:900;
+    letter-spacing:0.4em; color:var(--accent);
+    margin-bottom:clamp(8px,2vh,20px);
+    border-bottom:3px solid var(--accent); display:inline-block; padding-bottom:4px;
+  }
+  .title-block { position:relative; line-height:0.85; }
+  .tl {
+    display:block; font-size:clamp(68px,12vw,190px); font-weight:900;
+    letter-spacing:-0.03em; line-height:0.85;
+  }
+  .tl.one {
+    color:var(--ink);
+    text-shadow: 6px 6px 0 var(--accent);
+  }
+  .tl.two {
+    color:var(--bg);
+    -webkit-text-stroke:4px solid var(--ink);
+    text-stroke:4px solid var(--ink);
+    text-shadow:8px 8px 0 var(--accent-deep);
+    margin-top:-0.04em;
+  }
+  .tl.three {
+    color:var(--accent);
+    text-shadow:6px 6px 0 var(--stripe);
+    margin-top:-0.04em;
+    position:relative;
+  }
+  .tl.three::after {
+    content:''; position:absolute; bottom:-10px; right:0;
+    width:55%; height:6px; background:var(--ink);
+  }
+  .sub-row {
+    display:flex; justify-content:space-between; align-items:flex-end;
+    margin-top:clamp(30px,5vh,50px); gap:20px; flex-wrap:wrap;
+  }
+  .sub-text {
+    font-family:monospace; font-size:clamp(14px,1.8vw,24px); font-weight:900;
+    letter-spacing:0.1em; border:4px solid var(--ink);
+    padding:12px 20px; display:inline-block;
+    background:var(--accent); color:var(--bg);
+  }
+  .sub-note {
+    font-family:monospace; font-size:clamp(11px,1.2vw,15px);
+    line-height:1.6; max-width:280px; text-align:right;
+    border-right:4px solid var(--stripe); padding-right:16px; color:var(--stripe);
+  }
+  .shape {
+    position:fixed; right:clamp(20px,5vw,80px); bottom:clamp(80px,12vh,160px);
+    width:clamp(80px,10vw,140px); height:clamp(55px,7vw,90px);
+    background:var(--accent); border:4px solid var(--ink);
+    clip-path: polygon(
+      0% 25%, 8% 0%, 16% 25%, 25% 0%, 33% 25%,
+      42% 0%, 50% 25%, 58% 0%, 66% 25%, 75% 0%,
+      83% 25%, 92% 0%, 100% 25%,
+      100% 75%, 92% 100%, 83% 75%, 75% 100%, 66% 75%,
+      58% 100%, 50% 75%, 42% 100%, 33% 75%, 25% 100%,
+      16% 75%, 8% 100%, 0% 75%
+    );
+    z-index:50; opacity:0.85; transform:rotate(-3deg);
+    box-shadow:8px 8px 0 var(--stripe);
+  }
+  .banner {
+    border-top:4px solid var(--ink); border-bottom:4px solid var(--ink);
+    padding:10px 0; margin:10px 0 0; overflow:hidden; white-space:nowrap;
+  }
+  .banner-scroll {
+    display:inline-block; font-family:monospace;
+    font-size:clamp(11px,1vw,14px); font-weight:900; letter-spacing:0.15em;
+    animation:scroll 16s linear infinite;
+  }
+  @keyframes scroll {
+    0%{transform:translateX(0)} 100%{transform:translateX(-50%)}
+  }
+  .bottom-grid {
+    display:grid; grid-template-columns:repeat(3,1fr); gap:0;
+    border-top:4px solid var(--ink); margin-top:auto; padding:10px 0;
+  }
+  .gc {
+    padding:14px 10px; border-right:2px dashed var(--stripe);
+    font-family:monospace; font-size:clamp(10px,1vw,13px); font-weight:700;
+    letter-spacing:0.05em; text-transform:uppercase; color:var(--stripe); opacity:0.7;
+  }
+  .gc:last-child { border-right:none; }
+  .gc .bn {
+    display:block; font-size:clamp(28px,3.5vw,52px); font-weight:900;
+    color:var(--accent); line-height:1; font-family:'Noto Sans SC',sans-serif;
+  }
+  @media(max-width:768px) {
+    .tl { font-size:clamp(48px,17vw,110px); }
+    .tl.two { -webkit-text-stroke:2.5px solid var(--ink); }
+    .bottom-grid { grid-template-columns:1fr; border-top:3px solid var(--ink); }
+    .gc { border-right:none; border-bottom:1px dashed var(--stripe); }
+    .sub-row { flex-direction:column; align-items:flex-start; }
+    .sub-note { text-align:left; border-right:none; border-left:4px solid var(--stripe); padding-left:16px; padding-right:0; max-width:100%; }
+    .shape { right:10px; bottom:120px; width:60px; height:40px; }
+  }
+  @media(prefers-reduced-motion:reduce) { .banner-scroll { animation:none; } }
+</style>
+</head>
+<body>
+<div class="frame ft"></div><div class="frame fb"></div><div class="frame fl"></div><div class="frame fr"></div>
+<div class="zigzag"></div>
+<div class="shape" aria-hidden="true"></div>
+<div class="container">
+  <div class="top-marks">
+    <span class="label">BRUTALIST &nbsp; PROMO &nbsp; #025</span>
+    <span class="label">WAVY &nbsp; FRIES</span>
+    <div class="zig"></div>
+  </div>
+  <div class="hero">
+    <div class="lines"></div>
+    <div class="hero-inner">
+      <div class="super">!!! 街头霸王 !!!</div>
+      <div class="title-block">
+        <span class="tl one">狼牙</span>
+        <span class="tl two">土豆</span>
+        <span class="tl three">土豆</span>
+      </div>
+      <div class="sub-row">
+        <div class="sub-text">孜然飘香 · 外焦里糯</div>
+        <div class="sub-note">
+          锯齿波纹，每一根都是艺术品。<br>
+          孜然、辣椒、花椒在热油中炸开。<br>
+          街头小吃的王者，夜市的灵魂。
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="banner">
+    <div class="banner-scroll">
+      狼牙土豆 ★ SPICY WAVY FRIES ★ 狼牙土豆 ★ SPICY WAVY FRIES ★
+      狼牙土豆 ★ SPICY WAVY FRIES ★ 狼牙土豆 ★ SPICY WAVY FRIES ★
+      狼牙土豆 ★ SPICY WAVY FRIES ★ 狼牙土豆 ★ SPICY WAVY FRIES ★
+      狼牙土豆 ★ SPICY WAVY FRIES ★ 狼牙土豆 ★ SPICY WAVY FRIES ★
+    </div>
+  </div>
+  <div class="bottom-grid">
+    <div class="gc"><span class="bn">200°C</span>油温控制</div>
+    <div class="gc"><span class="bn">狼牙刀</span>必备工具</div>
+    <div class="gc"><span class="bn">∞</span>街头人气</div>
+  </div>
+</div>
+</body>
+</html>

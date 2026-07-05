@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>土豆 · 粗野主义</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { height:100%; overflow:hidden; }
+  iframe { width:100%; height:100%; border:none; display:block; }
+</style>
+</head>
+<body>
+<script>
+  (function(){
+    var pages=["roasted-potato.html","mashed-potato.html","french-fries.html","sour-spicy-shreds.html","beef-potato-stew.html","spicy-wavy-fries.html"];
+    var pick=pages[Math.floor(Math.random()*pages.length)];
+    var frame=document.createElement("iframe");
+    frame.src=pick;
+    document.body.appendChild(frame);
+    history.replaceState(null,"",location.pathname.replace(/index\.html$/,""));
+  })();
+</script>
+</body>
+</html>

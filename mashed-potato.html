@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>土豆泥</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@900&display=swap');
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+  :root {
+    --bg: #faf7f0; --ink: #1a1814; --accent: #d4a843;
+    --accent-deep: #8b6914; --stripe: #3d3426;
+  }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: 'Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif;
+    min-height: 100vh; overflow-x: hidden;
+  }
+  .frame { position:fixed; background:var(--stripe); z-index:100; }
+  .ft { top:0; left:0; right:0; height:6px; }
+  .fb { bottom:0; left:0; right:0; height:6px; }
+  .fl { top:0; left:0; bottom:0; width:6px; }
+  .fr { top:0; right:0; bottom:0; width:6px; }
+  .noise {
+    position:fixed; inset:0; pointer-events:none; z-index:0; opacity:0.03;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 200px 200px;
+  }
+  .container {
+    position:relative; z-index:1; min-height:100vh;
+    display:flex; flex-direction:column; padding:20px 20px 0; max-width:1400px; margin:0 auto;
+  }
+  .top-marks {
+    display:flex; justify-content:space-between; align-items:flex-start;
+    padding:16px 0 10px; border-bottom:4px solid var(--ink); margin-bottom:0;
+  }
+  .top-marks .label {
+    font-size:clamp(10px,1vw,13px); font-weight:900; letter-spacing:0.25em;
+    text-transform:uppercase; color:var(--stripe); font-family:monospace;
+  }
+  .top-marks .geo {
+    width:40px; height:40px; border:4px solid var(--accent);
+    border-radius:50%;
+  }
+  .hero {
+    flex:1; display:flex; flex-direction:column; justify-content:center;
+    padding:clamp(20px,4vh,60px) 0; position:relative;
+  }
+  .lines {
+    position:absolute; inset:0; pointer-events:none; z-index:0; overflow:hidden;
+  }
+  .lines::before {
+    content:''; position:absolute; top:18%; left:-5%; width:110%; height:2px;
+    background:var(--accent); opacity:0.25; transform:rotate(-1.5deg);
+  }
+  .lines::after {
+    content:''; position:absolute; bottom:22%; left:-5%; width:110%; height:2px;
+    background:var(--accent); opacity:0.25; transform:rotate(1deg);
+  }
+  .hero-inner { position:relative; z-index:1; }
+  .super {
+    font-family:monospace; font-size:clamp(12px,1.5vw,18px); font-weight:900;
+    letter-spacing:0.4em; color:var(--accent);
+    margin-bottom:clamp(8px,2vh,20px);
+    border-bottom:3px solid var(--accent); display:inline-block; padding-bottom:4px;
+  }
+  .title-block { position:relative; line-height:0.85; }
+  .tl {
+    display:block; font-size:clamp(68px,12vw,190px); font-weight:900;
+    letter-spacing:-0.03em; line-height:0.85;
+  }
+  .tl.one {
+    color:var(--ink);
+    text-shadow: 6px 6px 0 var(--accent);
+  }
+  .tl.two {
+    color:var(--bg);
+    -webkit-text-stroke:4px solid var(--ink);
+    text-stroke:4px solid var(--ink);
+    text-shadow:8px 8px 0 var(--accent-deep);
+    margin-top:-0.04em;
+  }
+  .tl.three {
+    color:var(--accent);
+    text-shadow:6px 6px 0 var(--stripe);
+    margin-top:-0.04em;
+    position:relative;
+  }
+  .tl.three::after {
+    content:''; position:absolute; bottom:-10px; right:0;
+    width:55%; height:6px; background:var(--ink);
+  }
+  .sub-row {
+    display:flex; justify-content:space-between; align-items:flex-end;
+    margin-top:clamp(30px,5vh,50px); gap:20px; flex-wrap:wrap;
+  }
+  .sub-text {
+    font-family:monospace; font-size:clamp(14px,1.8vw,24px); font-weight:900;
+    letter-spacing:0.1em; border:4px solid var(--ink);
+    padding:12px 20px; display:inline-block;
+    background:var(--accent); color:var(--bg);
+  }
+  .sub-note {
+    font-family:monospace; font-size:clamp(11px,1.2vw,15px);
+    line-height:1.6; max-width:280px; text-align:right;
+    border-right:4px solid var(--stripe); padding-right:16px; color:var(--stripe);
+  }
+  .shape {
+    position:fixed; right:clamp(20px,5vw,80px); bottom:clamp(80px,12vh,160px);
+    width:clamp(90px,12vw,160px); height:clamp(70px,9vw,120px);
+    background:var(--accent); border-radius:50%;
+    border:4px solid var(--ink); z-index:50; opacity:0.8;
+    box-shadow:8px 8px 0 var(--stripe);
+  }
+  .shape::after {
+    content:''; position:absolute; inset:14px;
+    background:var(--accent-deep); border-radius:50%; opacity:0.3;
+  }
+  .banner {
+    border-top:4px solid var(--ink); border-bottom:4px solid var(--ink);
+    padding:10px 0; margin:10px 0 0; overflow:hidden; white-space:nowrap;
+  }
+  .banner-scroll {
+    display:inline-block; font-family:monospace;
+    font-size:clamp(11px,1vw,14px); font-weight:900; letter-spacing:0.15em;
+    animation:scroll 20s linear infinite;
+  }
+  @keyframes scroll {
+    0%{transform:translateX(0)} 100%{transform:translateX(-50%)}
+  }
+  .bottom-grid {
+    display:grid; grid-template-columns:repeat(3,1fr); gap:0;
+    border-top:4px solid var(--ink); margin-top:auto; padding:10px 0;
+  }
+  .gc {
+    padding:14px 10px; border-right:2px dashed var(--stripe);
+    font-family:monospace; font-size:clamp(10px,1vw,13px); font-weight:700;
+    letter-spacing:0.05em; text-transform:uppercase; color:var(--stripe); opacity:0.7;
+  }
+  .gc:last-child { border-right:none; }
+  .gc .bn {
+    display:block; font-size:clamp(28px,3.5vw,52px); font-weight:900;
+    color:var(--accent); line-height:1; font-family:'Noto Sans SC',sans-serif;
+  }
+  @media(max-width:768px) {
+    .tl { font-size:clamp(48px,17vw,110px); }
+    .tl.two { -webkit-text-stroke:2.5px solid var(--ink); }
+    .bottom-grid { grid-template-columns:1fr; border-top:3px solid var(--ink); }
+    .gc { border-right:none; border-bottom:1px dashed var(--stripe); }
+    .sub-row { flex-direction:column; align-items:flex-start; }
+    .sub-note { text-align:left; border-right:none; border-left:4px solid var(--stripe); padding-left:16px; padding-right:0; max-width:100%; }
+    .shape { right:10px; bottom:120px; width:70px; height:55px; }
+  }
+  @media(prefers-reduced-motion:reduce) { .banner-scroll { animation:none; } }
+</style>
+</head>
+<body>
+<div class="frame ft"></div><div class="frame fb"></div><div class="frame fl"></div><div class="frame fr"></div>
+<div class="noise"></div>
+<div class="shape" aria-hidden="true"></div>
+<div class="container">
+  <div class="top-marks">
+    <span class="label">BRUTALIST &nbsp; PROMO &nbsp; #021</span>
+    <span class="label">MASHED &nbsp; POTATO</span>
+    <div class="geo"></div>
+  </div>
+  <div class="hero">
+    <div class="lines"></div>
+    <div class="hero-inner">
+      <div class="super">!!! 顺滑宣言 !!!</div>
+      <div class="title-block">
+        <span class="tl one">丝滑</span>
+        <span class="tl two">土豆泥</span>
+        <span class="tl three">土豆泥</span>
+      </div>
+      <div class="sub-row">
+        <div class="sub-text">黄油融合 · 奶香绵密</div>
+        <div class="sub-note">
+          一勺下去，如云似雾。<br>
+          黄油与牛奶在土豆的怀抱里融化。<br>
+          最温柔的碳水，最治愈的泥。
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="banner">
+    <div class="banner-scroll">
+      丝滑土豆泥 ★ MASHED POTATOES ★ 丝滑土豆泥 ★ MASHED POTATOES ★
+      丝滑土豆泥 ★ MASHED POTATOES ★ 丝滑土豆泥 ★ MASHED POTATOES ★
+      丝滑土豆泥 ★ MASHED POTATOES ★ 丝滑土豆泥 ★ MASHED POTATOES ★
+      丝滑土豆泥 ★ MASHED POTATOES ★ 丝滑土豆泥 ★ MASHED POTATOES ★
+    </div>
+  </div>
+  <div class="bottom-grid">
+    <div class="gc"><span class="bn">1:1</span>黄油比例</div>
+    <div class="gc"><span class="bn">80目</span>过筛细度</div>
+    <div class="gc"><span class="bn">∞</span>绵密指数</div>
+  </div>
+</div>
+</body>
+</html>

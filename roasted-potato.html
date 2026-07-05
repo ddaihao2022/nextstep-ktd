@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>我要吃烤土豆</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@900&display=swap');
+
+  *, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  :root {
+    --bg: #f4f0e8;
+    --ink: #1a1612;
+    --accent: #e85d04;
+    --accent-deep: #9d2b00;
+    --stripe: #2b241a;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* --- Structural Stripes --- */
+  .stripe-bar {
+    position: fixed;
+    background: var(--stripe);
+    z-index: 100;
+  }
+  .stripe-top {
+    top: 0; left: 0; right: 0; height: 6px;
+  }
+  .stripe-bottom {
+    bottom: 0; left: 0; right: 0; height: 6px;
+  }
+  .stripe-left {
+    top: 0; left: 0; bottom: 0; width: 6px;
+  }
+  .stripe-right {
+    top: 0; right: 0; bottom: 0; width: 6px;
+  }
+
+  /* --- Diagonal slash background --- */
+  .slash-bg {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.04;
+    background: repeating-linear-gradient(
+      -35deg,
+      transparent,
+      transparent 40px,
+      var(--ink) 40px,
+      var(--ink) 42px
+    );
+  }
+
+  /* --- Main container --- */
+  .container {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: 20px 20px 0;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  /* --- Top structural elements --- */
+  .top-marks {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 16px 0 10px;
+    border-bottom: 4px solid var(--ink);
+    margin-bottom: 0;
+  }
+  .top-marks .label {
+    font-size: clamp(10px, 1vw, 13px);
+    font-weight: 900;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--stripe);
+    font-family: monospace;
+  }
+  .top-marks .corner-geo {
+    width: 40px;
+    height: 40px;
+    border: 4px solid var(--accent);
+  }
+
+  /* --- HERO BLOCK --- */
+  .hero {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: clamp(20px, 4vh, 60px) 0;
+    position: relative;
+  }
+
+  /* --- Decorative construction lines --- */
+  .construction-lines {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .construction-lines::before {
+    content: '';
+    position: absolute;
+    top: 15%;
+    left: -5%;
+    width: 110%;
+    height: 2px;
+    background: var(--accent);
+    opacity: 0.3;
+    transform: rotate(-2deg);
+  }
+  .construction-lines::after {
+    content: '';
+    position: absolute;
+    bottom: 20%;
+    left: -5%;
+    width: 110%;
+    height: 2px;
+    background: var(--accent);
+    opacity: 0.3;
+    transform: rotate(1.5deg);
+  }
+
+  .hero-inner {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* --- SUPERSCRIPT --- */
+  .superscript {
+    font-family: monospace;
+    font-size: clamp(12px, 1.5vw, 18px);
+    font-weight: 900;
+    letter-spacing: 0.5em;
+    color: var(--accent);
+    margin-bottom: clamp(8px, 2vh, 20px);
+    border-bottom: 3px solid var(--accent);
+    display: inline-block;
+    padding-bottom: 4px;
+  }
+
+  /* --- Main Title --- */
+  .title-block {
+    position: relative;
+    line-height: 0.85;
+  }
+
+  .title-line {
+    display: block;
+    font-size: clamp(72px, 13vw, 200px);
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    line-height: 0.85;
+  }
+
+  .title-line.one {
+    color: var(--ink);
+    text-shadow: 6px 6px 0 var(--accent);
+  }
+
+  .title-line.two {
+    color: var(--bg);
+    -webkit-text-stroke: 4px solid var(--ink);
+    text-stroke: 4px solid var(--ink);
+    text-shadow: 8px 8px 0 var(--accent-deep);
+    margin-top: -0.04em;
+  }
+
+  .title-line.three {
+    color: var(--accent);
+    text-shadow: 6px 6px 0 var(--stripe);
+    margin-top: -0.04em;
+    position: relative;
+  }
+
+  .title-line.three::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    right: 0;
+    width: 60%;
+    height: 6px;
+    background: var(--ink);
+  }
+
+  /* --- Sub elements --- */
+  .sub-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-top: clamp(30px, 5vh, 50px);
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .sub-text {
+    font-family: monospace;
+    font-size: clamp(14px, 1.8vw, 24px);
+    font-weight: 900;
+    letter-spacing: 0.1em;
+    border: 4px solid var(--ink);
+    padding: 12px 20px;
+    display: inline-block;
+    background: var(--accent);
+    color: var(--bg);
+  }
+
+  .sub-note {
+    font-family: monospace;
+    font-size: clamp(11px, 1.2vw, 15px);
+    line-height: 1.6;
+    max-width: 280px;
+    text-align: right;
+    border-right: 4px solid var(--stripe);
+    padding-right: 16px;
+    color: var(--stripe);
+  }
+
+  /* --- Bottom grid --- */
+  .bottom-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    border-top: 4px solid var(--ink);
+    margin-top: auto;
+    padding: 10px 0;
+  }
+  .grid-cell {
+    padding: 14px 10px;
+    border-right: 2px dashed var(--stripe);
+    font-family: monospace;
+    font-size: clamp(10px, 1vw, 13px);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--stripe);
+    opacity: 0.7;
+  }
+  .grid-cell:last-child {
+    border-right: none;
+  }
+  .grid-cell .big-num {
+    display: block;
+    font-size: clamp(28px, 3.5vw, 52px);
+    font-weight: 900;
+    color: var(--accent);
+    line-height: 1;
+    font-family: 'Noto Sans SC', sans-serif;
+  }
+
+  /* --- Floating potato shape --- */
+  .potato-shape {
+    position: fixed;
+    right: clamp(20px, 5vw, 80px);
+    bottom: clamp(80px, 12vh, 160px);
+    width: clamp(80px, 10vw, 150px);
+    height: clamp(60px, 8vw, 110px);
+    background: var(--accent);
+    border-radius: 45% 55% 50% 50% / 50% 45% 55% 50%;
+    border: 4px solid var(--ink);
+    z-index: 50;
+    opacity: 0.85;
+    transform: rotate(-12deg);
+    box-shadow: 8px 8px 0 var(--stripe);
+  }
+  .potato-shape::after {
+    content: '';
+    position: absolute;
+    inset: 10px;
+    background: var(--accent-deep);
+    border-radius: 40% 60% 55% 45% / 55% 45% 50% 50%;
+    opacity: 0.4;
+  }
+
+  /* --- Bottom banner --- */
+  .banner {
+    border-top: 4px solid var(--ink);
+    border-bottom: 4px solid var(--ink);
+    padding: 10px 0;
+    margin: 10px 0 0;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  .banner-scroll {
+    display: inline-block;
+    font-family: monospace;
+    font-size: clamp(11px, 1vw, 14px);
+    font-weight: 900;
+    letter-spacing: 0.15em;
+    animation: scroll-left 20s linear infinite;
+  }
+  @keyframes scroll-left {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  /* --- Responsive --- */
+  @media (max-width: 768px) {
+    .title-line {
+      font-size: clamp(52px, 18vw, 120px);
+    }
+    .title-line.two {
+      -webkit-text-stroke: 2.5px solid var(--ink);
+    }
+    .bottom-grid {
+      grid-template-columns: 1fr;
+      border-top: 3px solid var(--ink);
+    }
+    .grid-cell {
+      border-right: none;
+      border-bottom: 1px dashed var(--stripe);
+    }
+    .sub-row {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .sub-note {
+      text-align: left;
+      border-right: none;
+      border-left: 4px solid var(--stripe);
+      padding-left: 16px;
+      padding-right: 0;
+      max-width: 100%;
+    }
+    .potato-shape {
+      right: 10px;
+      bottom: 120px;
+      width: 60px;
+      height: 44px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .banner-scroll {
+      animation: none;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="stripe-bar stripe-top"></div>
+<div class="stripe-bar stripe-bottom"></div>
+<div class="stripe-bar stripe-left"></div>
+<div class="stripe-bar stripe-right"></div>
+
+<div class="slash-bg"></div>
+
+<div class="potato-shape" aria-hidden="true"></div>
+
+<div class="container">
+  <div class="top-marks">
+    <span class="label">BRUTALIST &nbsp; PROMO &nbsp; #019</span>
+    <span class="label">SINCE &nbsp; 2026</span>
+    <div class="corner-geo"></div>
+  </div>
+
+  <div class="hero">
+    <div class="construction-lines"></div>
+
+    <div class="hero-inner">
+      <div class="superscript">!!! 紧急通告 !!!</div>
+
+      <div class="title-block">
+        <span class="title-line one">我要吃</span>
+        <span class="title-line two">烤土豆</span>
+        <span class="title-line three">烤土豆</span>
+      </div>
+
+      <div class="sub-row">
+        <div class="sub-text">外焦里嫩 · 香气四溢</div>
+        <div class="sub-note">
+          烤土豆是世上最朴素、最真诚的食物。<br>
+          没有花哨的摆盘，没有复杂的调料。<br>
+          只有火候、盐、和一颗纯粹的土豆。
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="banner">
+    <div class="banner-scroll">
+      我要吃烤土豆 &nbsp; ★ &nbsp; I WANT ROASTED POTATOES &nbsp; ★ &nbsp; 我要吃烤土豆 &nbsp; ★ &nbsp; I WANT ROASTED POTATOES &nbsp; ★ &nbsp;
+      我要吃烤土豆 &nbsp; ★ &nbsp; I WANT ROASTED POTATOES &nbsp; ★ &nbsp; 我要吃烤土豆 &nbsp; ★ &nbsp; I WANT ROASTED POTATOES &nbsp; ★ &nbsp;
+      我要吃烤土豆 &nbsp; ★ &nbsp; I WANT ROASTED POTATOES &nbsp; ★ &nbsp; 我要吃烤土豆 &nbsp; ★ &nbsp; I WANT ROASTED POTATOES &nbsp; ★ &nbsp;
+      我要吃烤土豆 &nbsp; ★ &nbsp; I WANT ROASTED POTATOES &nbsp; ★ &nbsp; 我要吃烤土豆 &nbsp; ★ &nbsp; I WANT ROASTED POTATOES &nbsp; ★ &nbsp;
+    </div>
+  </div>
+
+  <div class="bottom-grid">
+    <div class="grid-cell">
+      <span class="big-num">200°C</span>
+      最佳烘烤温度
+    </div>
+    <div class="grid-cell">
+      <span class="big-num">45min</span>
+      标准出炉时间
+    </div>
+    <div class="grid-cell">
+      <span class="big-num">∞</span>
+      幸福指数
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
